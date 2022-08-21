@@ -37,6 +37,10 @@ const Producto = config_1.default.define('Productos', {
     idCategoria: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
+    },
+    estado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: true
     }
 }, {
     timestamps: false

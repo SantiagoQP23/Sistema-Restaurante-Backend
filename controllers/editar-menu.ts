@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { where } from "sequelize/types";
 import Categoria from "../models/categoria";
 import Producto from "../models/producto";
 import Seccion from "../models/seccion";
@@ -14,7 +15,7 @@ export async function aniadirSeccion(req: Request, res: Response) {
 
   const { nombreSeccion } = req.body;
 
-  const seccion = await Seccion.create({ nombreSeccion });
+  const seccion = await Seccion.create({ nombreSeccion, estado: true });
 
   return res.status(201).json({
     msg: "La seccion se añadió correctamente",
@@ -45,17 +46,26 @@ export async function eliminarSeccion(req: Request, res: Response) {
 
   const { idSeccion } = req.params;
 
+  await Seccion.update({ estado: false }, {
+    where: {
+      idSeccion
+    }
+  });
+
   const seccion = await Seccion.findByPk(idSeccion, {
     attributes: [
       'nombreSeccion'
     ]
   });
 
+  /*  
+
+
   await Seccion.destroy({
     where: {
       idSeccion
     }
-  });
+  }); */
 
   res.status(200).json({
     msg: `La seccion ${seccion!.nombreSeccion} se elimino correctamente`
@@ -70,7 +80,7 @@ export async function aniadirCategoria(req: Request, res: Response) {
 
   const { nombreCategoria, idSeccion } = req.body;
 
-  const categoria = await Categoria.create({ nombreCategoria, idSeccion });
+  const categoria = await Categoria.create({ nombreCategoria, idSeccion, estado: true });
 
   res.status(201).json({
     msg: `La categoria ${nombreCategoria} se creo correctamente`,
@@ -108,18 +118,25 @@ export async function eliminarCategoria(req: Request, res: Response) {
 
   const { idCategoria } = req.params;
 
+  await Categoria.update({ estado: false }, {
+    where: {
+      idCategoria
+    }
+  }
+  );
+
   const categoria = await Categoria.findByPk(idCategoria, {
     attributes: [
       'nombreCategoria'
     ]
   });
 
-  await Categoria.destroy({
-    where: {
-      idCategoria
-    }
-  });
-
+  /*   await Categoria.destroy({
+      where: {
+        idCategoria
+      }
+    });
+   */
   res.status(200).json({
     msg: `La categoria ${categoria!.nombreCategoria} se elimino correctamente`
   });
@@ -132,9 +149,10 @@ export async function aniadirProducto(req: Request, res: Response) {
 
   let { nombre, descripcion, idCategoria, precio } = req.body;
 
-  
+
   const producto = await Producto.create({
-    nombre, precio, descripcion, idCategoria, cantidad: 0, linkFoto: ''
+    nombre, precio, descripcion, idCategoria,
+    cantidad: 0, linkFoto: '', estado: true
   });
 
 
@@ -155,7 +173,7 @@ export async function actualizarProducto(req: Request, res: Response) {
 
   precio = Number(precio);
 
-   await Producto.update({
+  await Producto.update({
     nombre, precio, descripcion, idCategoria
   }, {
     where: {
@@ -173,17 +191,25 @@ export async function eliminarProducto(req: Request, res: Response) {
 
   const { idProducto } = req.params;
 
+  await Producto.update({
+    estado: false
+  }, {
+    where: {
+      idProducto
+    }
+  });
+
   const producto = await Producto.findByPk(idProducto, {
     attributes: [
       'nombre'
     ]
   });
 
-  await Producto.destroy({
+ /*  await Producto.destroy({
     where: {
       idProducto
     }
-  })
+  }) */
 
   res.status(200).json({
     msg: `El producto ${producto!.nombre} se elimino correctamente`

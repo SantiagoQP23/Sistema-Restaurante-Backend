@@ -5,7 +5,7 @@ import { check } from "express-validator";
 import {
   getPedidosPorFecha, crearPedido, getPedido,
   actualizarNombreCliente, actualizarEstadoPedido,
-  eliminarPedido, getDetallesPendientes
+  eliminarPedido, getDetallesPendientes, getPedidosPorMesero, getPedidosPorProducto
 } from '../controllers/pedidos';
 
 
@@ -33,6 +33,15 @@ router.get("/detalles/pendientes",
 router.post("/crear",
   crearPedido
 );
+router.get('/productos/dia/?',
+  getPedidosPorProducto
+)
+
+router.get('/meseros/dia/?',
+  getPedidosPorMesero
+);
+
+
 
 // Obtener un pedido por id
 router.get("/:idPedido",
@@ -50,19 +59,19 @@ router.get("/:idPedido",
 ); */
 
 // Cambiar estado a finalizado
-router.put("/editar/:idPedido/estado",
+/* router.put("/editar/:idPedido/estado",
   check('idPedido').custom(esPedidoValido),
   check('idPedido').custom(esPedidoEntregado),
   validarCampos,
   actualizarEstadoPedido);
-
+ */
 // Eliminar un pedido por su id
-router.delete("/eliminar/:idPedido",
+/* router.delete("/eliminar/:idPedido",
   check('idPedido').custom(esPedidoValido),
   check('idPedido').custom(esPedidoFinalizado),
   validarCampos,
   eliminarPedido
-);
+); */
 
 // Crear detalle de pedido
 /* router.post("/editar/:idPedido/detalles/crear",

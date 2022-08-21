@@ -21,7 +21,7 @@ const seccion_1 = __importDefault(require("../models/seccion"));
 function aniadirSeccion(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { nombreSeccion } = req.body;
-        const seccion = yield seccion_1.default.create({ nombreSeccion });
+        const seccion = yield seccion_1.default.create({ nombreSeccion, estado: true });
         return res.status(201).json({
             msg: "La seccion se añadió correctamente",
             seccion
@@ -47,16 +47,24 @@ exports.actualizarSeccion = actualizarSeccion;
 function eliminarSeccion(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { idSeccion } = req.params;
+        yield seccion_1.default.update({ estado: false }, {
+            where: {
+                idSeccion
+            }
+        });
         const seccion = yield seccion_1.default.findByPk(idSeccion, {
             attributes: [
                 'nombreSeccion'
             ]
         });
-        yield seccion_1.default.destroy({
-            where: {
-                idSeccion
-            }
-        });
+        /*
+      
+      
+        await Seccion.destroy({
+          where: {
+            idSeccion
+          }
+        }); */
         res.status(200).json({
             msg: `La seccion ${seccion.nombreSeccion} se elimino correctamente`
         });
@@ -67,7 +75,7 @@ exports.eliminarSeccion = eliminarSeccion;
 function aniadirCategoria(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { nombreCategoria, idSeccion } = req.body;
-        const categoria = yield categoria_1.default.create({ nombreCategoria, idSeccion });
+        const categoria = yield categoria_1.default.create({ nombreCategoria, idSeccion, estado: true });
         res.status(201).json({
             msg: `La categoria ${nombreCategoria} se creo correctamente`,
             categoria
@@ -96,16 +104,22 @@ exports.actualizarCategoria = actualizarCategoria;
 function eliminarCategoria(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { idCategoria } = req.params;
+        yield categoria_1.default.update({ estado: false }, {
+            where: {
+                idCategoria
+            }
+        });
         const categoria = yield categoria_1.default.findByPk(idCategoria, {
             attributes: [
                 'nombreCategoria'
             ]
         });
-        yield categoria_1.default.destroy({
+        /*   await Categoria.destroy({
             where: {
-                idCategoria
+              idCategoria
             }
-        });
+          });
+         */
         res.status(200).json({
             msg: `La categoria ${categoria.nombreCategoria} se elimino correctamente`
         });
@@ -117,7 +131,8 @@ function aniadirProducto(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let { nombre, descripcion, idCategoria, precio } = req.body;
         const producto = yield producto_1.default.create({
-            nombre, precio, descripcion, idCategoria, cantidad: 0, linkFoto: ''
+            nombre, precio, descripcion, idCategoria,
+            cantidad: 0, linkFoto: '', estado: true
         });
         res.status(201).json({
             msg: "El producto se añadio correctamente",
@@ -148,16 +163,23 @@ exports.actualizarProducto = actualizarProducto;
 function eliminarProducto(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { idProducto } = req.params;
+        yield producto_1.default.update({
+            estado: false
+        }, {
+            where: {
+                idProducto
+            }
+        });
         const producto = yield producto_1.default.findByPk(idProducto, {
             attributes: [
                 'nombre'
             ]
         });
-        yield producto_1.default.destroy({
-            where: {
-                idProducto
-            }
-        });
+        /*  await Producto.destroy({
+           where: {
+             idProducto
+           }
+         }) */
         res.status(200).json({
             msg: `El producto ${producto.nombre} se elimino correctamente`
         });

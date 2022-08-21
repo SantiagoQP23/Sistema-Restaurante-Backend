@@ -6,6 +6,7 @@ interface SeccionModel extends Model<InferAttributes<SeccionModel>, InferCreatio
   // Some fields are optional when calling UserModel.create() or UserModel.build()
   idSeccion: CreationOptional<number>;
   nombreSeccion: string;
+  estado: boolean;
 }
 
 const Seccion = db.define<SeccionModel>('Secciones', {
@@ -19,6 +20,12 @@ const Seccion = db.define<SeccionModel>('Secciones', {
     unique: true,
     
   },
+  estado: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+    
+  }
+
 }, {
   timestamps: false
 })

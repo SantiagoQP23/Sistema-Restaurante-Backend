@@ -11,6 +11,7 @@ interface ProductoModel extends Model<InferAttributes<ProductoModel>, InferCreat
   descripcion: string;
   linkFoto: string;
   idCategoria: number;
+  estado: boolean;
 }
 
 const Producto = db.define<ProductoModel>( 'Productos',{
@@ -50,6 +51,10 @@ const Producto = db.define<ProductoModel>( 'Productos',{
   idCategoria: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  estado: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
   
 

@@ -25,6 +25,7 @@ const crearAsociaciones = () => {
     usuario_1.default.hasMany(pedido_1.default, { as: 'pedidos', foreignKey: 'idUsuario' });
     pedido_1.default.belongsTo(usuario_1.default, { as: 'usuario', foreignKey: 'idUsuario' });
     // Detalle tiene un producto
+    producto_1.default.hasMany(detalle_pedido_1.default, { as: 'detalles', foreignKey: 'idProducto' });
     detalle_pedido_1.default.belongsTo(producto_1.default, { as: 'producto', foreignKey: 'idProducto' });
     cargo_1.default.hasMany(usuario_1.default, { as: 'usuarios', foreignKey: 'idCargo' });
     usuario_1.default.belongsTo(cargo_1.default, { as: 'cargo', foreignKey: 'idCargo' });

@@ -8,10 +8,17 @@ const sequelize_1 = require("sequelize");
   database: "tienda"
 
 }; */
+/*
+const db = new Sequelize( 'heroku_f231292cd946c3d', 'b72cca3e850eb1', '48e76602', {
+  host: 'us-cdbr-east-06.cleardb.net',
+  dialect: 'mysql',
+
+  logging: false
+}); */
 const db = new sequelize_1.Sequelize('tienda', 'root', 'santiago1234', {
     host: 'localhost',
     dialect: 'mysql',
-    // logging: false
+    logging: false
 });
 exports.default = db;
 //# sourceMappingURL=config.js.map

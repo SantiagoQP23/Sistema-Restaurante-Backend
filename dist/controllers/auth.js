@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.revalidarToken = exports.login = void 0;
+exports.getUsuarios = exports.crearUsuario = exports.revalidarToken = exports.login = void 0;
 const generar_jwt_1 = require("../helpers/generar-jwt");
 const cargo_1 = __importDefault(require("../models/cargo"));
 const usuario_1 = __importDefault(require("../models/usuario"));
@@ -40,12 +40,12 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 nombreUsuario
             },
             attributes: [
-                'idUsuario', 'nombreUsuario', 'nombres',
+                'idUsuario', 'nombreUsuario', 'nombres'
             ],
             include: {
                 model: cargo_1.default,
                 as: 'cargo',
-                attributes: ['nombreCargo']
+                attributes: ['nombreCargo', 'idCargo']
             }
         });
         // Verificar la constraseña 
@@ -78,7 +78,7 @@ const revalidarToken = (req, res) => __awaiter(void 0, void 0, void 0, function*
         include: {
             model: cargo_1.default,
             as: 'cargo',
-            attributes: ['nombreCargo']
+            attributes: ['nombreCargo', 'idCargo']
         }
     });
     const token = yield (0, generar_jwt_1.generarJWT)(idUsuario);
@@ -89,4 +89,49 @@ const revalidarToken = (req, res) => __awaiter(void 0, void 0, void 0, function*
     });
 });
 exports.revalidarToken = revalidarToken;
+const crearUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { nombres, idCargo, nombreUsuario, password } = req.body;
+    console.log("creando usuario", nombreUsuario);
+    const salt = yield bcryptjs_1.default.genSalt(10);
+    const hash = yield bcryptjs_1.default.hash(password, salt);
+    yield usuario_1.default.create({
+        nombres, idCargo, nombreUsuario, password: hash, online: false,
+        estado: true
+    });
+    const usuario = yield usuario_1.default.findOne({
+        where: {
+            nombreUsuario
+        },
+        attributes: [
+            'idUsuario', 'nombreUsuario', 'nombres',
+        ],
+        include: {
+            model: cargo_1.default,
+            as: 'cargo',
+            attributes: ['nombreCargo', 'idCargo']
+        }
+    });
+    res.status(201).json({
+        msg: 'El usuario fue creado correctamente',
+        usuario
+    });
+});
+exports.crearUsuario = crearUsuario;
+const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const usuarios = yield usuario_1.default.findAll({
+        attributes: [
+            'idUsuario', 'nombreUsuario', 'nombres', 'online'
+        ],
+        include: {
+            model: cargo_1.default,
+            as: 'cargo',
+            attributes: ['nombreCargo', 'idCargo']
+        }
+    });
+    res.status(200).json({
+        msg: 'La lista de usuarios se obtuvo correctamente',
+        usuarios
+    });
+});
+exports.getUsuarios = getUsuarios;
 //# sourceMappingURL=auth.js.map

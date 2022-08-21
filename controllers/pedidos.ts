@@ -7,6 +7,9 @@ import Producto from "../models/producto";
 import DetallePedido from "../models/detalle-pedido";
 import Usuario from "../models/usuario";
 import { IEliminarDetalle, IActualizarEstadoDetalle, IPedidoNombreCliente } from '../interfaces/sockets';
+import { request } from "http";
+import Cargo from "../models/cargo";
+import { validarFecha } from "../helpers/datetime";
 
 
 
@@ -41,14 +44,21 @@ function obtenerHora() {
 
 //OBTENER LOS PEDIDOS DE UNA FECHA
 export async function getPedidosPorFecha(req: Request, res: Response) {
+
   let { fecha } = req.query;
 
-  // TODO: validar fecha
-  // 1. Sockets con typescript 
-  // Verificar controladores de sockets
-  // Pruebas con la fecha
+  
+
   if (!fecha) {
     fecha = obtenerFechaActual();
+  }
+
+  const fechaValida = validarFecha(fecha as string);
+
+  if(!fechaValida) {
+    return res.status(400).json({
+      msg: 'Fecha no valida'
+    })
   }
 
   //const pedidos = await Pedido.findAll();
@@ -83,6 +93,106 @@ export async function getPedidosPorFecha(req: Request, res: Response) {
   });
 }
 
+export const getPedidosPorMesero = async (req: Request, res: Response) => {
+
+  let { fecha } = req.query;
+
+  if (!fecha) {
+    fecha = obtenerFechaActual();
+  }
+
+  const fechaValida = validarFecha(fecha as string);
+
+  if(!fechaValida) {
+    return res.status(400).json({
+      msg: 'Fecha no valida'
+    })
+  }
+
+  const meseros = await Usuario.findAll({
+    attributes: ['idUsuario', 'nombreUsuario', 'nombres'],
+
+    include: [
+      {
+        model: Pedido,
+        as: 'pedidos',
+        attributes: ['total', 'fecha'],
+        where: {
+          fecha: `${fecha}`
+        }
+
+      },
+      {
+        model: Cargo,
+        as: 'cargo',
+        attributes: ['idCargo','nombreCargo']
+      }
+
+    ],
+
+ 
+  });
+
+  return res.status(200).json({
+    msg: 'Lista de pedidos por mesero',
+    meseros
+  })
+
+}
+
+export const getPedidosPorProducto = async (req: Request, res: Response) => {
+
+  let { fecha } = req.query;
+
+  if (!fecha) {
+    fecha = obtenerFechaActual();
+  }
+
+  const fechaValida = validarFecha(fecha as string);
+
+  if(!fechaValida) {
+    return res.status(400).json({
+      msg: 'Fecha no valida'
+    })
+  }
+
+  const productos = await Producto.findAll({
+    attributes: ['idProducto', 'nombre', 'precio'],
+    include: [
+      {
+        model: DetallePedido,
+        as: 'detalles',
+        attributes: ['idDetallePedido', 'cantidad'],
+        include: [
+          {
+            model: Pedido,
+            as: 'pedido',
+            attributes: ['total', 'fecha'],
+            where: {
+              fecha: `${fecha}`
+            }
+    
+          }]
+      }
+    ]
+
+ 
+  });
+
+  return res.status(200).json({
+    msg: 'Lista de pedidos por producto',
+    productos
+  })
+
+}
+
+
+
+
+
+
+
+
 
 export async function crearPedido(req: Request, res: Response) {
   // Todos los pedidos se crean en la fecha actual
@@ -90,6 +200,7 @@ export async function crearPedido(req: Request, res: Response) {
   const fecha = obtenerFechaActual();
 
   const hora = obtenerHora();
+
   const pedidoNuevo = await Pedido.create({
     idUsuario: Number(req.uid),
     hora,
@@ -202,13 +313,13 @@ const actualizarTotalPedido = async (idPedido: number, subtotal: number, aumenta
       'total'
     ]
   });
-  
+
   let total: number;
 
-  if ( aumentar ) {
+  if (aumentar) {
 
-    total = Number(subtotal) + Number(pedido!.total );
-  }else{
+    total = Number(subtotal) + Number(pedido!.total);
+  } else {
     total = Number(pedido!.total) - Number(subtotal);
 
   }
@@ -240,7 +351,7 @@ export const crearDetallePedido = async (detalle: INuevoDetallePedido) => {
 
   const subtotal = producto!.precio * detalle.cantidad;
 
-  
+
 
   actualizarTotalPedido(idPedido, subtotal);
 
@@ -262,18 +373,9 @@ export const crearDetallePedido = async (detalle: INuevoDetallePedido) => {
     {
 
       include: [{
-        model: Pedido,
-        as: 'pedido',
-        attributes: ['nombreCliente'],
-        include: [{
-          model: Usuario,
-          as: 'usuario',
-          attributes: ['nombres']
-        }]
-      }, {
         model: Producto,
         as: 'producto',
-        attributes: ['nombre']
+        attributes: ['idProducto', 'nombre', 'precio', 'descripcion', 'linkFoto', 'idCategoria', 'cantidad']
       }]
     });
 

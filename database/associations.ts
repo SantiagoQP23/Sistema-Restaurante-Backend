@@ -26,6 +26,7 @@ export const crearAsociaciones = () => {
   Pedido.belongsTo(Usuario, {as: 'usuario', foreignKey: 'idUsuario'});
 
   // Detalle tiene un producto
+  Producto.hasMany(DetallePedido, { as: 'detalles', foreignKey: 'idProducto' });
   DetallePedido.belongsTo(Producto, { as: 'producto', foreignKey: 'idProducto' });
 
   Cargo.hasMany(Usuario, { as: 'usuarios', foreignKey: 'idCargo'});

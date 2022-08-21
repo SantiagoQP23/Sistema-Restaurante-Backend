@@ -15,6 +15,10 @@ const Seccion = config_1.default.define('Secciones', {
         type: sequelize_1.DataTypes.STRING,
         unique: true,
     },
+    estado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: true,
+    }
 }, {
     timestamps: false
 });

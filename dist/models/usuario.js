@@ -23,6 +23,16 @@ const Usuario = config_1.default.define('Usuario', {
     },
     idCargo: {
         type: sequelize_1.DataTypes.BOOLEAN
+    },
+    online: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: true
+    },
+    estado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: true
     }
 });
 exports.default = Usuario;

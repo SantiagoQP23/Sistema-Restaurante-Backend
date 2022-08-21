@@ -14,7 +14,14 @@ const Cargo = config_1.default.define('Cargo', {
     nombreCargo: {
         type: sequelize_1.DataTypes.STRING,
         unique: true
+    },
+    estado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: true
     }
+}, {
+    timestamps: false
 });
 exports.default = Cargo;
 //# sourceMappingURL=cargo.js.map

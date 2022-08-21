@@ -13,11 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDetallesPendientes = exports.eliminarDetallePedido = exports.actualizarCantidadDetalle = exports.crearDetallePedido = exports.eliminarPedido = exports.actualizarEstadoPedido = exports.actualizarNombreCliente = exports.getPedido = exports.crearPedido = exports.getPedidosPorFecha = void 0;
+exports.getDetallesPendientes = exports.eliminarDetallePedido = exports.actualizarCantidadDetalle = exports.crearDetallePedido = exports.eliminarPedido = exports.actualizarEstadoPedido = exports.actualizarNombreCliente = exports.getPedido = exports.crearPedido = exports.getPedidosPorProducto = exports.getPedidosPorMesero = exports.getPedidosPorFecha = void 0;
 const pedido_1 = __importDefault(require("../models/pedido"));
 const producto_1 = __importDefault(require("../models/producto"));
 const detalle_pedido_1 = __importDefault(require("../models/detalle-pedido"));
 const usuario_1 = __importDefault(require("../models/usuario"));
+const cargo_1 = __importDefault(require("../models/cargo"));
+const datetime_1 = require("../helpers/datetime");
 function obtenerFechaActual() {
     // Se debe mostrar solo los pedidos del dia actual
     var fecha = new Date(); //Fecha actual
@@ -42,12 +44,14 @@ function obtenerHora() {
 function getPedidosPorFecha(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let { fecha } = req.query;
-        // TODO: validar fecha
-        // 1. Sockets con typescript 
-        // Verificar controladores de sockets
-        // Pruebas con la fecha
         if (!fecha) {
             fecha = obtenerFechaActual();
+        }
+        const fechaValida = (0, datetime_1.validarFecha)(fecha);
+        if (!fechaValida) {
+            return res.status(400).json({
+                msg: 'Fecha no valida'
+            });
         }
         //const pedidos = await Pedido.findAll();
         const pedidos = yield pedido_1.default.findAll({
@@ -79,6 +83,78 @@ function getPedidosPorFecha(req, res) {
     });
 }
 exports.getPedidosPorFecha = getPedidosPorFecha;
+const getPedidosPorMesero = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let { fecha } = req.query;
+    if (!fecha) {
+        fecha = obtenerFechaActual();
+    }
+    const fechaValida = (0, datetime_1.validarFecha)(fecha);
+    if (!fechaValida) {
+        return res.status(400).json({
+            msg: 'Fecha no valida'
+        });
+    }
+    const meseros = yield usuario_1.default.findAll({
+        attributes: ['idUsuario', 'nombreUsuario', 'nombres'],
+        include: [
+            {
+                model: pedido_1.default,
+                as: 'pedidos',
+                attributes: ['total', 'fecha'],
+                where: {
+                    fecha: `${fecha}`
+                }
+            },
+            {
+                model: cargo_1.default,
+                as: 'cargo',
+                attributes: ['idCargo', 'nombreCargo']
+            }
+        ],
+    });
+    return res.status(200).json({
+        msg: 'Lista de pedidos por mesero',
+        meseros
+    });
+});
+exports.getPedidosPorMesero = getPedidosPorMesero;
+const getPedidosPorProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let { fecha } = req.query;
+    if (!fecha) {
+        fecha = obtenerFechaActual();
+    }
+    const fechaValida = (0, datetime_1.validarFecha)(fecha);
+    if (!fechaValida) {
+        return res.status(400).json({
+            msg: 'Fecha no valida'
+        });
+    }
+    const productos = yield producto_1.default.findAll({
+        attributes: ['idProducto', 'nombre', 'precio'],
+        include: [
+            {
+                model: detalle_pedido_1.default,
+                as: 'detalles',
+                attributes: ['idDetallePedido', 'cantidad'],
+                include: [
+                    {
+                        model: pedido_1.default,
+                        as: 'pedido',
+                        attributes: ['total', 'fecha'],
+                        where: {
+                            fecha: `${fecha}`
+                        }
+                    }
+                ]
+            }
+        ]
+    });
+    return res.status(200).json({
+        msg: 'Lista de pedidos por producto',
+        productos
+    });
+});
+exports.getPedidosPorProducto = getPedidosPorProducto;
 function crearPedido(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         // Todos los pedidos se crean en la fecha actual
@@ -212,18 +288,9 @@ const crearDetallePedido = (detalle) => __awaiter(void 0, void 0, void 0, functi
     // En el frontend saneo la informmación para añadir el detalle  al pedido
     const nuevoDetalle = yield detalle_pedido_1.default.findByPk(detalleCreado.idDetallePedido, {
         include: [{
-                model: pedido_1.default,
-                as: 'pedido',
-                attributes: ['nombreCliente'],
-                include: [{
-                        model: usuario_1.default,
-                        as: 'usuario',
-                        attributes: ['nombres']
-                    }]
-            }, {
                 model: producto_1.default,
                 as: 'producto',
-                attributes: ['nombre']
+                attributes: ['idProducto', 'nombre', 'precio', 'descripcion', 'linkFoto', 'idCategoria', 'cantidad']
             }]
     });
     return nuevoDetalle;

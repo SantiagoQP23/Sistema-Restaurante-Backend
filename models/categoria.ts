@@ -7,6 +7,7 @@ interface CategoriaModel extends Model<InferAttributes<CategoriaModel>, InferCre
   idCategoria: CreationOptional<number>;
   nombreCategoria: string;
   idSeccion: number;
+  estado: boolean;
 }
 
 const Categoria = db.define<CategoriaModel>('Categorias', {
@@ -24,6 +25,10 @@ const Categoria = db.define<CategoriaModel>('Categorias', {
     type: DataTypes.INTEGER,
 
   },
+  estado: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  }
   
 
 }, {

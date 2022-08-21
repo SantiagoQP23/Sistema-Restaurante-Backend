@@ -31,21 +31,33 @@ const seccion_1 = __importDefault(require("../models/seccion"));
 } */
 function getSecciones(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const secciones = yield seccion_1.default.findAll();
+        const secciones = yield seccion_1.default.findAll({
+            where: {
+                estado: true
+            }
+        });
         res.status(200).json({ secciones });
     });
 }
 exports.getSecciones = getSecciones;
 function getCategorias(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const categorias = yield categoria_1.default.findAll();
+        const categorias = yield categoria_1.default.findAll({
+            where: {
+                estado: true
+            }
+        });
         res.status(200).json({ categorias });
     });
 }
 exports.getCategorias = getCategorias;
 function getProductos(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const productos = yield producto_1.default.findAll();
+        const productos = yield producto_1.default.findAll({
+            where: {
+                estado: true
+            }
+        });
         res.status(200).json({ productos });
     });
 }

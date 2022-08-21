@@ -20,7 +20,11 @@ import Seccion from "../models/seccion";
 
 export async function getSecciones(req: Request, res: Response) {
 
-    const secciones = await Seccion.findAll();
+  const secciones = await Seccion.findAll({
+    where: {
+      estado: true
+    }
+  });
 
 
   res.status(200).json({ secciones });
@@ -29,7 +33,11 @@ export async function getSecciones(req: Request, res: Response) {
 
 export async function getCategorias(req: Request, res: Response) {
 
-  const categorias = await Categoria.findAll();
+  const categorias = await Categoria.findAll({
+    where: {
+      estado: true
+    }
+  });
 
   res.status(200).json({ categorias });
 
@@ -37,8 +45,13 @@ export async function getCategorias(req: Request, res: Response) {
 
 export async function getProductos(req: Request, res: Response) {
 
-  const productos = await Producto.findAll();
-  res.status(200).json({ productos});
+  const productos = await Producto.findAll({
+
+    where: {
+      estado: true
+    }
+  });
+  res.status(200).json({ productos });
 
 }
 

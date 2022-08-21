@@ -37,14 +37,13 @@ export const login = async (req: Request, res: Response) => {
         nombreUsuario
       },
       attributes: [
-        'idUsuario', 'nombreUsuario', 'nombres',
+        'idUsuario', 'nombreUsuario', 'nombres'
       ],
       include: {
         model: Cargo,
         as: 'cargo',
-        attributes: ['nombreCargo']
+        attributes: ['nombreCargo', 'idCargo']
       }
-
     });
 
     // Verificar la constraseña 
@@ -92,7 +91,7 @@ export const revalidarToken = async (req: IRequest, res: Response) => {
     include: {
       model: Cargo,
       as: 'cargo',
-      attributes: ['nombreCargo']
+      attributes: ['nombreCargo', 'idCargo']
     }
   });
 
@@ -104,4 +103,65 @@ export const revalidarToken = async (req: IRequest, res: Response) => {
     token
   })
 
+}
+
+
+export const crearUsuario = async (req: Request, res: Response) => {
+
+
+  const {nombres, idCargo, nombreUsuario, password} = req.body;
+
+  console.log("creando usuario", nombreUsuario)
+  const salt = await bcryptjs.genSalt(10);
+  const hash = await bcryptjs.hash(password, salt);
+
+  await Usuario.create({
+    nombres, idCargo, nombreUsuario, password: hash, online: false,
+    estado: true
+  });
+
+
+  const usuario = await Usuario.findOne({
+    where: {
+      nombreUsuario
+    },
+    attributes: [
+      'idUsuario', 'nombreUsuario', 'nombres',
+    ],
+    include: {
+      model: Cargo,
+      as: 'cargo',
+      attributes: ['nombreCargo', 'idCargo']
+    }
+
+  });
+
+
+
+  res.status(201).json({
+    msg: 'El usuario fue creado correctamente',
+    usuario
+  });
+
+
+}
+
+export const getUsuarios = async (req: Request, res: Response) => {
+
+  const usuarios = await Usuario.findAll({
+    attributes: [
+      'idUsuario', 'nombreUsuario', 'nombres', 'online'
+    ],
+    include: {
+      model: Cargo,
+      as: 'cargo',
+      attributes: ['nombreCargo', 'idCargo']
+    }
+
+  });
+
+  res.status(200).json({
+    msg: 'La lista de usuarios se obtuvo correctamente',
+    usuarios
+  })
 }

@@ -2,19 +2,6 @@ import { IProducto } from './';
 
 
 
-
-export interface IPedido {
-
-  idPedido: number,
-  idUsuario: number,
-  total: number,
-  fecha: Date,
-  nombreCliente: string,
-  estado: boolean,
-  hora: Date,
-}
-
-
 export interface IDetallePedido{
   idDetallePedido: number,
   producto: IProducto,
@@ -27,6 +14,20 @@ export interface IDetallePedido{
 
   idPedido: number,
 }
+
+export interface IPedido {
+
+  idPedido: number,
+  idUsuario: number,
+  total: number,
+  fecha: Date,
+  nombreCliente: string,
+  estado: boolean,
+  hora: Date,
+  detalles?: IDetallePedido[];
+}
+
+
 
 export interface INuevoDetallePedido{
   idDetallePedido?: number,

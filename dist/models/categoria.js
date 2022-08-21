@@ -19,6 +19,10 @@ const Categoria = config_1.default.define('Categorias', {
     idSeccion: {
         type: sequelize_1.DataTypes.INTEGER,
     },
+    estado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: true
+    }
 }, {
     timestamps: false
 });

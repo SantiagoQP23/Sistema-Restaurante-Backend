@@ -9,6 +9,8 @@ interface UsuarioModel extends Model<InferAttributes<UsuarioModel>, InferCreatio
   nombres: string;
   password: string;
   idCargo: number;
+  online: boolean;
+  estado: boolean;
 }
 
 
@@ -31,6 +33,16 @@ const Usuario = db.define<UsuarioModel>( 'Usuario', {
   },
   idCargo: {
     type: DataTypes.BOOLEAN
+  },
+  online: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: true
+  },
+  estado: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+    allowNull: true
   }
 
 });
