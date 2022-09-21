@@ -14,16 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const config_1 = __importDefault(require("../database/config"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const morgan_1 = __importDefault(require("morgan"));
+const sockets_1 = __importDefault(require("./sockets"));
+const config_1 = __importDefault(require("../database/config"));
 const associations_1 = require("../database/associations");
 const auth_1 = __importDefault(require("../routes/auth"));
 const pedidos_1 = __importDefault(require("../routes/pedidos"));
 const menu_1 = __importDefault(require("../routes/menu"));
 const editar_menu_1 = __importDefault(require("../routes/editar-menu"));
-const sockets_1 = __importDefault(require("./sockets"));
 class MyServer {
     constructor() {
         this.paths = {

@@ -1,19 +1,20 @@
 
 import express, {Application} from 'express';
 import cors from "cors";
-import db from "../database/config";
 import { createServer, Server } from "http";
 import {Server as socketio} from 'socket.io';
 import morgan from 'morgan';
 
+import Sockets from './sockets';
 
+import db from "../database/config";
 import {crearAsociaciones} from '../database/associations';
+
 import authRoutes from "../routes/auth";
 import pedidosRoutes from "../routes/pedidos";
 import menuRoutes from '../routes/menu';
 import editarMenuRoutes from '../routes/editar-menu';
 
-import Sockets from './sockets';
 import { ClientToServerEvents, ServerToClientEvents } from '../interfaces/sockets';
 
 
